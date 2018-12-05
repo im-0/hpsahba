@@ -127,6 +127,7 @@ static void fill_cmd(IOCTL_Command_struct *cmd, uint8_t cmd_num, void *buf,
 
 	switch (cmd_num) {
 	case BMIC_IDENTIFY_CONTROLLER:
+	case BMIC_SENSE_CONTROLLER_PARAMETERS:
 		/* direction_write = 0; */
 		break;
 	default:
@@ -215,6 +216,13 @@ static int is_hba_mode_supported(
 	return (f & YET_MORE_CTLR_FLAG_HBA_MODE_SUPP) ? 1 : 0;
 }
 
+static void sense_controller_parameters(const char *path, int fd,
+	struct bmic_controller_parameters *controller_params)
+{
+	exec_cmd(path, fd, BMIC_SENSE_CONTROLLER_PARAMETERS, controller_params,
+		sizeof(*controller_params));
+}
+
 static const char *trim(char *str)
 {
 	/* Remove leading spaces. */
@@ -245,8 +253,10 @@ static void print_info_fw_rev(const char *var_name, const char *rev_buf)
 static void print_info(const char *path, int fd)
 {
 	struct bmic_identify_controller controller_id = {0};
+	struct bmic_controller_parameters controller_params = {0};
 
 	identify_controller(path, fd, &controller_id);
+	sense_controller_parameters(path, fd, &controller_params);
 
 	print_info_str_buf("VENDOR_ID",
 		controller_id.vendor_id, VENDOR_ID_LEN);
@@ -254,6 +264,10 @@ static void print_info(const char *path, int fd)
 		controller_id.product_id, PRODUCT_ID_LEN);
 	printf("BOARD_ID='0x%08x'\n",
 		le32toh(controller_id.board_id));
+	print_info_str_buf("SOFTWARE_NAME",
+		controller_params.software_name, SOFTWARE_NAME_LEN);
+	print_info_str_buf("HARDWARE_NAME",
+		controller_params.hardware_name, HARDWARE_NAME_LEN);
 	print_info_fw_rev("RUNNING_FIRM_REV",
 		controller_id.running_firm_rev);
 	print_info_fw_rev("ROM_FIRM_REV",

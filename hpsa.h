@@ -38,11 +38,14 @@
 #define BMIC_WRITE 0x27
 
 #define BMIC_IDENTIFY_CONTROLLER 0x11
+#define BMIC_SENSE_CONTROLLER_PARAMETERS 0x64
 
 #define FIRMWARE_REV_LEN 4
 #define VENDOR_ID_LEN 8
 #define PRODUCT_ID_LEN 16
-#define MAX_STR_BUF_LEN PRODUCT_ID_LEN
+#define SOFTWARE_NAME_LEN 64
+#define HARDWARE_NAME_LEN 32
+#define MAX_STR_BUF_LEN SOFTWARE_NAME_LEN
 
 struct bmic_identify_controller {
 	u8 num_logical_drives;
@@ -155,6 +158,44 @@ struct bmic_identify_controller {
 };
 
 #define YET_MORE_CTLR_FLAG_HBA_MODE_SUPP (1 << 25)
+
+struct bmic_controller_parameters {
+	u8 led_flags;
+	u8 enable_command_list_verification;
+	u8 backed_out_write_drives;
+	u16le stripes_for_parity;
+	u8 parity_distribution_mode_flags;
+	u16le max_driver_requests;
+	u16le elevator_trend_count;
+	u8 disable_elevator;
+	u8 force_scan_complete;
+	u8 scsi_transfer_mode;
+	u8 force_narrow;
+	u8 rebuild_priority;
+	u8 expand_priority;
+	u8 host_sdb_asic_fix;
+	u8 pdpi_burst_from_host_disabled;
+	char software_name[SOFTWARE_NAME_LEN];
+	char hardware_name[HARDWARE_NAME_LEN];
+	u8 bridge_revision;
+	u8 snapshot_priority;
+	u32le os_specific;
+	u8 post_prompt_timeout;
+	u8 automatic_drive_slamming;
+	u8 reserved_1;
+	u8 nvram_flags;
+	u8 cache_nvram_flags;
+	u8 drive_config_flags;
+	u16le reserved_2;
+	u8 temp_warning_level;
+	u8 temp_shutdown_level;
+	u8 temp_condition_reset;
+	u8 max_coalesce_commands;
+	u32le max_coalesce_delay;
+	u8 orca_password[4];
+	u8 access_id[16];
+	u8 reserved[356];
+};
 
 #pragma pack()
 #endif /* HPSAHBA_HPSA_H */
