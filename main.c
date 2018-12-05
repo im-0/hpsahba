@@ -223,6 +223,13 @@ static void sense_controller_parameters(const char *path, int fd,
 		sizeof(*controller_params));
 }
 
+static int is_hba_mode_enabled(
+	const struct bmic_controller_parameters *controller_params)
+{
+	uint8_t f = controller_params->nvram_flags;
+	return (f & NVRAM_FLAG_HBA_MODE_ENABLED) ? 1 : 0;
+}
+
 static const char *trim(char *str)
 {
 	/* Remove leading spaces. */
@@ -276,8 +283,12 @@ static void print_info(const char *path, int fd)
 		controller_id.rec_rom_inactive_rev);
 	printf("YET_MORE_CONTROLLER_FLAGS='0x%08x'\n",
 		le32toh(controller_id.yet_more_controller_flags));
+	printf("NVRAM_FLAGS='0x%02x'\n",
+		controller_params.nvram_flags);
 	printf("HBA_MODE_SUPPORTED=%d\n",
 		is_hba_mode_supported(&controller_id));
+	printf("HBA_MODE_ENABLED=%d\n",
+		is_hba_mode_enabled(&controller_params));
 }
 
 enum cli_action {

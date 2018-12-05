@@ -197,5 +197,7 @@ struct bmic_controller_parameters {
 	u8 reserved[356];
 };
 
+#define NVRAM_FLAG_HBA_MODE_ENABLED (1 << 3)
+
 #pragma pack()
 #endif /* HPSAHBA_HPSA_H */
