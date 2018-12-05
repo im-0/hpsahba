@@ -288,6 +288,8 @@ static void print_info(const char *path, int fd)
 {
 	struct bmic_identify_controller controller_id = {0};
 	struct bmic_controller_parameters controller_params = {0};
+	int hba_mode_supported;
+	int hba_mode_enabled = 0;
 
 	identify_controller(path, fd, &controller_id);
 	sense_controller_parameters(path, fd, &controller_params);
@@ -312,10 +314,14 @@ static void print_info(const char *path, int fd)
 		le32toh(controller_id.yet_more_controller_flags));
 	printf("NVRAM_FLAGS='0x%02x'\n",
 		controller_params.nvram_flags);
+
+	hba_mode_supported = is_hba_mode_supported(&controller_id);
+	if (hba_mode_supported)
+		hba_mode_enabled = is_hba_mode_enabled(&controller_params);
 	printf("HBA_MODE_SUPPORTED=%d\n",
-		is_hba_mode_supported(&controller_id));
+		hba_mode_supported);
 	printf("HBA_MODE_ENABLED=%d\n",
-		is_hba_mode_enabled(&controller_params));
+		hba_mode_enabled);
 }
 
 static void verify_hba_mode(const char *path, int fd, int should_be_enabled)
@@ -346,7 +352,7 @@ static void change_hba_mode(const char *path, int fd, int enabled)
 	identify_controller(path, fd, &controller_id);
 	sense_controller_parameters(path, fd, &controller_params);
 
-	if (enabled && !is_hba_mode_supported(&controller_id))
+	if (!is_hba_mode_supported(&controller_id))
 		die_dev(path, "HBA mode is not supported on this controller");
 
 	fill_hba_mode(&controller_params, enabled);
