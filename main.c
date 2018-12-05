@@ -344,6 +344,14 @@ static void verify_hba_mode(const char *path, int fd, int should_be_enabled)
 	}
 }
 
+static void rescan_scsi(const char *path, int fd)
+{
+	int rc = ioctl(fd, CCISS_REGNEWD);
+	if (rc)
+		die_dev_errno(path,
+			"ioctl(CCISS_REGNEWD) failed, rc == %d", rc);
+}
+
 static void change_hba_mode(const char *path, int fd, int enabled)
 {
 	struct bmic_identify_controller controller_id = {0};
@@ -359,6 +367,8 @@ static void change_hba_mode(const char *path, int fd, int enabled)
 	set_controller_parameters(path, fd, &controller_params);
 
 	verify_hba_mode(path, fd, enabled);
+
+	rescan_scsi(path, fd);
 }
 
 enum cli_action {
