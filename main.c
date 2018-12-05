@@ -365,6 +365,13 @@ enum cli_action {
 	ACTION_UNKNOWN,
 };
 
+static void set_action(enum cli_action *cur_action, enum cli_action new_action)
+{
+	if (*cur_action != ACTION_UNKNOWN)
+		die("More than one option selected, try running with -h");
+	*cur_action = new_action;
+}
+
 int main(int argc, char *argv[])
 {
 	int opt = 0;
@@ -381,21 +388,21 @@ int main(int argc, char *argv[])
 			/* No more options. */
 			break;
 		case 'h':
-			action = ACTION_HELP;
+			set_action(&action, ACTION_HELP);
 			break;
 		case 'v':
-			action = ACTION_VERSION;
+			set_action(&action, ACTION_VERSION);
 			break;
 		case 'i':
-			action = ACTION_INFO;
+			set_action(&action, ACTION_INFO);
 			path = optarg;
 			break;
 		case 'E':
-			action = ACTION_ENABLE;
+			set_action(&action, ACTION_ENABLE);
 			path = optarg;
 			break;
 		case 'd':
-			action = ACTION_DISABLE;
+			set_action(&action, ACTION_DISABLE);
 			path = optarg;
 			break;
 		case '?':
