@@ -71,6 +71,8 @@ static void print_help(const char *exe_name)
 		"\t%s -h\n"
 		"\t%s -v\n"
 		"\t%s -i /dev/sgN\n"
+		"\t%s -E /dev/sgN\n"
+		"\t%s -d /dev/sgN\n"
 		"\n"
 		"Options:\n"
 		"\t-h\n"
@@ -80,9 +82,15 @@ static void print_help(const char *exe_name)
 		"\t\tPrint version number and exit.\n"
 		"\n"
 		"\t-i <device path>\n"
-		"\t\tGet information about HP Smart Array controller.\n",
+		"\t\tGet information about HP Smart Array controller.\n"
+		"\n"
+		"\t-E <device path>\n"
+		"\t\tEnable HBA mode on controller.\n"
+		"\n"
+		"\t-d <device path>\n"
+		"\t\tDisable HBA mode on controller.\n",
 		hpsahba_version,
-		exe_name, exe_name, exe_name);
+		exe_name, exe_name, exe_name, exe_name, exe_name);
 }
 
 static void print_version()
@@ -129,6 +137,9 @@ static void fill_cmd(IOCTL_Command_struct *cmd, uint8_t cmd_num, void *buf,
 	case BMIC_IDENTIFY_CONTROLLER:
 	case BMIC_SENSE_CONTROLLER_PARAMETERS:
 		/* direction_write = 0; */
+		break;
+	case BMIC_SET_CONTROLLER_PARAMETERS:
+		direction_write = 1;
 		break;
 	default:
 		/* Should never happen. */
@@ -223,11 +234,27 @@ static void sense_controller_parameters(const char *path, int fd,
 		sizeof(*controller_params));
 }
 
+static void set_controller_parameters(const char *path, int fd,
+	struct bmic_controller_parameters *controller_params)
+{
+	exec_cmd(path, fd, BMIC_SET_CONTROLLER_PARAMETERS, controller_params,
+		sizeof(*controller_params));
+}
+
 static int is_hba_mode_enabled(
 	const struct bmic_controller_parameters *controller_params)
 {
 	uint8_t f = controller_params->nvram_flags;
 	return (f & NVRAM_FLAG_HBA_MODE_ENABLED) ? 1 : 0;
+}
+
+static void fill_hba_mode(
+	struct bmic_controller_parameters *controller_params, int enabled)
+{
+	if (enabled)
+		controller_params->nvram_flags |= NVRAM_FLAG_HBA_MODE_ENABLED;
+	else
+		controller_params->nvram_flags &= ~NVRAM_FLAG_HBA_MODE_ENABLED;
 }
 
 static const char *trim(char *str)
@@ -291,10 +318,49 @@ static void print_info(const char *path, int fd)
 		is_hba_mode_enabled(&controller_params));
 }
 
+static void verify_hba_mode(const char *path, int fd, int should_be_enabled)
+{
+	struct bmic_controller_parameters controller_params = {0};
+
+	sense_controller_parameters(path, fd, &controller_params);
+	if (should_be_enabled) {
+		if (!is_hba_mode_enabled(&controller_params))
+			die_dev(path,
+				"HBA mode enable failed, "
+				"nvram_flags == 0x%02x",
+				controller_params.nvram_flags);
+	} else {
+		if (is_hba_mode_enabled(&controller_params))
+			die_dev(path,
+				"HBA mode disable failed, "
+				"nvram_flags == 0x%02x",
+				controller_params.nvram_flags);
+	}
+}
+
+static void change_hba_mode(const char *path, int fd, int enabled)
+{
+	struct bmic_identify_controller controller_id = {0};
+	struct bmic_controller_parameters controller_params = {0};
+
+	identify_controller(path, fd, &controller_id);
+	sense_controller_parameters(path, fd, &controller_params);
+
+	if (enabled && !is_hba_mode_supported(&controller_id))
+		die_dev(path, "HBA mode is not supported on this controller");
+
+	fill_hba_mode(&controller_params, enabled);
+	set_controller_parameters(path, fd, &controller_params);
+
+	verify_hba_mode(path, fd, enabled);
+}
+
 enum cli_action {
 	ACTION_HELP,
 	ACTION_VERSION,
 	ACTION_INFO,
+	ACTION_ENABLE,
+	ACTION_DISABLE,
 
 	ACTION_UNKNOWN,
 };
@@ -308,7 +374,7 @@ int main(int argc, char *argv[])
 
 	opterr = 0;
 	while (opt != -1) {
-		opt = getopt(argc, argv, ":hvi:");
+		opt = getopt(argc, argv, ":hvi:E:d:");
 
 		switch (opt) {
 		case -1:
@@ -322,6 +388,14 @@ int main(int argc, char *argv[])
 			break;
 		case 'i':
 			action = ACTION_INFO;
+			path = optarg;
+			break;
+		case 'E':
+			action = ACTION_ENABLE;
+			path = optarg;
+			break;
+		case 'd':
+			action = ACTION_DISABLE;
 			path = optarg;
 			break;
 		case '?':
@@ -352,6 +426,12 @@ int main(int argc, char *argv[])
 		break;
 	case ACTION_INFO:
 		print_info(path, fd);
+		break;
+	case ACTION_ENABLE:
+		change_hba_mode(path, fd, 1);
+		break;
+	case ACTION_DISABLE:
+		change_hba_mode(path, fd, 0);
 		break;
 	default:
 		die("No option selected, try running with -h");
