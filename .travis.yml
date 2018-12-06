@@ -1,9 +1,9 @@
 os:
   - linux
 
-dist: xenial
+dist: trusty
 
 script:
   - make clean
-  - make CFLAGS="-std=gnu99 -Wall -Wextra -Wpedantic -O2 -g -Werror" all
+  - make CFLAGS="-std=gnu99 -Wall -Wextra -O2 -g -Werror" all
   - make clean
