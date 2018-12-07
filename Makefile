@@ -15,7 +15,7 @@ all: hpsahba
 main.o: hpsa.h
 
 hpsahba: main.o
-	$(CC) $(LDFLAGS) -o $(@) $(<)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(@) $(<)
 
 clean:
 	rm -f *.o
