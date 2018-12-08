@@ -56,6 +56,8 @@ static void really_die(const char *format, ...)
 
 #define die(format, ...) \
 	really_die("FATAL ERROR: " format "\n", ##__VA_ARGS__)
+#define die_errno(format, ...) \
+	die(format ": %d %s", ##__VA_ARGS__, errno, strerror(errno))
 #define die_dev(path, format, ...) \
 	die("%s: " format, path, ##__VA_ARGS__)
 #define die_dev_errno(path, format, ...) \
@@ -141,7 +143,8 @@ static void ask_user_confirmation()
 		"\tHBA MODE CHANGE WILL DESTROY YOU DATA!\n"
 		"\tHBA MODE CHANGE MAY DAMAGE YOUR HARDWARE!\n"
 		"Type uppercase \"yes\" to accept the risks and continue: ");
-	fgets(buf, sizeof(buf), stdin);
+	if (fgets(buf, sizeof(buf), stdin) == NULL)
+		die_errno("fgets() failed to read user confirmation");
 	if (strcmp(buf, "YES\n"))
 		die("Cancelled by user");
 }
