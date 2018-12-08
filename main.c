@@ -98,6 +98,54 @@ static void print_version()
 	printf("%s\n", hpsahba_version);
 }
 
+#define TERM_FMT_RESET "0"
+#define TERM_FMT_BOLD "1"
+#define TERM_FMT_BLINK "5"
+
+#define TERM_FG_BLACK "30"
+#define TERM_FG_YELLOW "33"
+
+#define TERM_BG_RED "41"
+
+#define TERM_ATTR_START "\033["
+#define TERM_ATTR_END "m"
+#define TERM_ATTR_RESET TERM_ATTR_START TERM_FMT_RESET TERM_ATTR_END
+
+static void print_caution_sign(int no_color)
+{
+	if (no_color) {
+		fputs(" // CAUTION // ", stderr);
+	} else {
+		fputs(
+			TERM_ATTR_START TERM_FMT_RESET ";" TERM_BG_RED ";"
+				TERM_FMT_BOLD ";" TERM_FG_YELLOW TERM_ATTR_END
+			" // "
+			TERM_ATTR_START TERM_FMT_RESET ";" TERM_BG_RED ";"
+				TERM_FMT_BLINK ";" TERM_FG_BLACK TERM_ATTR_END
+			" CAUTION "
+			TERM_ATTR_START TERM_FMT_RESET ";" TERM_BG_RED ";"
+				TERM_FMT_BOLD ";" TERM_FG_YELLOW TERM_ATTR_END
+			" // "
+			TERM_ATTR_RESET,
+			stderr);
+	}
+}
+
+static void ask_user_confirmation()
+{
+	char buf[5];
+
+	for (int i = 0; i < 5; i++)
+		print_caution_sign(i % 2);
+	fprintf(stderr,"\n"
+		"\tHBA MODE CHANGE WILL DESTROY YOU DATA!\n"
+		"\tHBA MODE CHANGE MAY DAMAGE YOUR HARDWARE!\n"
+		"Type uppercase \"yes\" to accept the risks and continue: ");
+	fgets(buf, sizeof(buf), stdin);
+	if (strcmp(buf, "YES\n"))
+		die("Cancelled by user");
+}
+
 static int open_dev(const char *path)
 {
 	int fd = open(path, O_RDWR);
@@ -356,6 +404,9 @@ static void change_hba_mode(const char *path, int fd, int enabled)
 {
 	struct bmic_identify_controller controller_id = {0};
 	struct bmic_controller_parameters controller_params = {0};
+
+	if (isatty(0) == 1)
+		ask_user_confirmation();
 
 	identify_controller(path, fd, &controller_id);
 	sense_controller_parameters(path, fd, &controller_params);
