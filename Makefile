@@ -3,7 +3,7 @@
 
 CC = gcc
 
-BASE_CFLAGS = -std=gnu99 -Wall -Wextra -Wpedantic
+BASE_CFLAGS = -std=gnu99 -Wall -Wextra
 CFLAGS = -O2 -g
 BASE_LDFLAGS =
 LDFLAGS =
