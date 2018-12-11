@@ -247,7 +247,7 @@ static void really_exec_cmd(const char *path, int fd, uint8_t cmd_num,
 	const char *cmd_name, void *buf, size_t size)
 {
 	int rc;
-	IOCTL_Command_struct cmd = {0};
+	IOCTL_Command_struct cmd = {{{0}}, {0}, {0}, 0, 0};
 
 	fill_cmd(&cmd, cmd_num, buf, size);
 	rc = ioctl(fd, CCISS_PASSTHRU, &cmd);
