@@ -4,6 +4,8 @@ os:
 dist: xenial
 
 script:
+  - make all
   - make clean
-  - make CFLAGS="-std=gnu99 -Wall -Wextra -O2 -g -Werror" all
+  - make CC=gcc CFLAGS="-Werror" all
   - make clean
+  - make CC=clang CFLAGS="-Wno-gnu-zero-variadic-macro-arguments -Werror" all

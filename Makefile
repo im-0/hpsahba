@@ -3,19 +3,21 @@
 
 CC = gcc
 
-CFLAGS = -std=gnu99 -Wall -Wextra -Wpedantic -O2 -g
+BASE_CFLAGS = -std=gnu99 -Wall -Wextra -Wpedantic
+CFLAGS = -O2 -g
+BASE_LDFLAGS =
 LDFLAGS =
 
 
 all: hpsahba
 
 .c.o:
-	$(CC) $(CFLAGS) -c -o $(@) $(<)
+	$(CC) $(BASE_CFLAGS) $(CFLAGS) -c -o $(@) $(<)
 
 main.o: hpsa.h
 
 hpsahba: main.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(@) $(<)
+	$(CC) $(BASE_CFLAGS) $(CFLAGS) $(BASE_LDFLAGS) $(LDFLAGS) -o $(@) $(<)
 
 clean:
 	rm -f *.o
