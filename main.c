@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -113,7 +114,7 @@ static void print_version()
 #define TERM_ATTR_END "m"
 #define TERM_ATTR_RESET TERM_ATTR_START TERM_FMT_RESET TERM_ATTR_END
 
-static void print_caution_sign(int no_color)
+static void print_caution_sign(bool no_color)
 {
 	if (no_color) {
 		fputs(" // CAUTION // ", stderr);
@@ -138,7 +139,7 @@ static void ask_user_confirmation()
 	char buf[5];
 
 	for (int i = 0; i < 5; i++)
-		print_caution_sign(i % 2);
+		print_caution_sign((i % 2) || (isatty(2) != 1));
 	fprintf(stderr,"\n"
 		"\tHBA MODE CHANGE WILL DESTROY YOU DATA!\n"
 		"\tHBA MODE CHANGE MAY DAMAGE YOUR HARDWARE!\n"
@@ -408,8 +409,7 @@ static void change_hba_mode(const char *path, int fd, int enabled)
 	struct bmic_identify_controller controller_id = {0};
 	struct bmic_controller_parameters controller_params = {0};
 
-	if (isatty(0) == 1)
-		ask_user_confirmation();
+	ask_user_confirmation();
 
 	identify_controller(path, fd, &controller_id);
 	sense_controller_parameters(path, fd, &controller_params);
