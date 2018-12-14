@@ -64,6 +64,10 @@ However, to get system actually see and use disks in HBA mode, few kernel
 patches may be required:
 <https://github.com/im-0/linux/commits/scsi-hpsa-support-hba-on-p410i>.
 
+This functionality is disabled by default. To enable, load module hpsa with
+parameter hpsa_use_nvram_hba_flag set to "1". Or set it in the kernel command
+line: "hpsa.hpsa_use_nvram_hba_flag=1".
+
 ## Supported hardware
 
 Tested on following hardware so far:
