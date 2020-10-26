@@ -85,6 +85,8 @@ Tested on following hardware so far:
 firmware: 6.64)
 * Hewlett-Packard Company Smart Array G6 controllers / P410 (PCI ID:
 103c:323a, board ID: 0x3243103c, firmware: 6.64)
+* Hewlett-Packard Company Smart Array G6 controllers / P212 (PCI ID:
+103c:323a, board ID: 0x3241103c, firmware: 6.64)
 
 (open an issue or a pull request if you successfully used this tool on
 other controllers)
