@@ -77,6 +77,9 @@ This will never be upstreamed and officially supported (for P410), see
 the email from Don Brace: <https://lkml.org/lkml/2018/12/17/618>. So use
 at your own risk.
 
+You can use DKMS package in [contrib/dkms](contrib/dkms) to patch hpsa driver in a compiled
+kernel.
+
 ## Supported hardware
 
 Tested on following hardware so far:
