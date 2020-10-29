@@ -61,7 +61,7 @@ arrays in this mode are expected to fail.
 **hpsahba** itself is able to work on any modern Linux system.
 
 However, to get system actually see and use disks in HBA mode, few kernel
-patches may be required:
+patches required:
 <https://github.com/im-0/hpsahba/tree/master/kernel>.
 
 This functionality is disabled by default. To enable, load module hpsa with
@@ -69,6 +69,7 @@ parameter hpsa_use_nvram_hba_flag set to "1". Or set it in the kernel command
 line: "hpsa.hpsa_use_nvram_hba_flag=1".
 
 Patchset changelog:
+
 * V1 -> V2:
   * Device visibility change properly detected if device is both updated
     and masked/unmasked in the same time.
@@ -77,8 +78,9 @@ This will never be upstreamed and officially supported (for P410), see
 the email from Don Brace: <https://lkml.org/lkml/2018/12/17/618>. So use
 at your own risk.
 
-You can use DKMS package in [contrib/dkms](contrib/dkms) to patch hpsa driver in a compiled
-kernel.
+You can use DKMS package in
+<https://github.com/im-0/hpsahba/tree/master/contrib/dkms> to patch hpsa driver
+in a compiled kernel.
 
 ## Supported hardware
 
