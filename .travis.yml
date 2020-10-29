@@ -1,14 +1,14 @@
 os:
   - linux
 
-dist: xenial
+dist: focal
 
 # To install additional packages.
 sudo: required
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y pandoc
+  - sudo apt-get install -y pandoc wget dkms linux-headers-$( uname -r )
 
 script:
   - make all
@@ -16,3 +16,8 @@ script:
   - make CC=gcc CFLAGS="-Werror" all
   - make clean
   - make CC=clang CFLAGS="-Wno-gnu-zero-variadic-macro-arguments -Werror" all
+  - >-
+      cd "contrib/dkms" &&
+      ./patch.sh &&
+      sudo dkms add . &&
+      sudo dkms install --force -k $( uname -r ) "hpsa-dkms/1.0"
