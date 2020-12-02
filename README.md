@@ -88,6 +88,8 @@ Tested on following hardware so far:
 
 * HP Smart Array P410i (PCI ID: 103c:3245, board ID: 0x3245103c,
 firmware: 6.64)
+* HP Smart Array P812 (PCI ID: 103c:3249, board ID: 0x3249103c,
+firmware: 6.64)
 * Hewlett-Packard Company Smart Array G6 controllers / P410 (PCI ID:
 103c:323a, board ID: 0x3243103c, firmware: 6.64)
 * Hewlett-Packard Company Smart Array G6 controllers / P212 (PCI ID:
