@@ -91,11 +91,13 @@ Given that it is rare to need to manually patch the linux kernel these days, you
 - Configure your kernel .config file (e.g., with make menuconfig) - only needed if you don't already have the .config configured. 
 - For each hpsahba patch, manually apply the patch with the following command:
 - `patch -p1 < /path/to/hpsahba/kernel/patchset-that-matches-your-kernel-version/000 ...`
-- Ensure all hunks were written correctly (no errors returned). Make && make install && make modules install. Then, update your initramfs and bootloader. **E.g., on gentoo:**
+- Ensure all hunks were written correctly (no errors returned). 
+- 'Make && make install && make modules && make modules install'.
+- Then, update your initramfs and bootloader. **E.g., on gentoo:**
 - mount /dev/... /boot (ensure external boot partition is loaded correctly)
 - genkernel --install --firmware --iscsi --luks ... (add additional options here) initramfs
 - grub-mkconfig -o /boot/grub/grub.cfg
-
+- Don't forget to add 'hpsa' in /etc/modules-load.d/hpsaLoad.conf and 'options hpsa hpsa_use_nvram_hba_flag=1' in /etc/modules.d/hpsaOpt.conf !
 ## Supported hardware
 
 Tested on following hardware so far:
