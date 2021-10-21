@@ -90,7 +90,10 @@ Given that it is rare to need to manually patch the linux kernel these days, you
 - Configure your kernel .config file (e.g., with make menuconfig) 
 - For each patch, manually apply the patch with the following command:
 - `patch -p1 < /path/to/hpsahba/kernel/patchset-that-matches-your-kernel-version/000 ...`
-- Ensure all hunks were written quickly. Make && make install && make modules install. Then, update your initramfs and bootloader
+- Ensure all hunks were written correctly (no errors returned). Make && make install && make modules install. Then, update your initramfs and bootloader.** E.g., on gentoo:**
+- mount /dev/... /boot (ensure external boot partition is loaded correctly)
+- genkernel --install --firmware --iscsi --luks ... (add additional options here) initramfs
+- grub-mkconfig -o /boot/grub/grub.cfg
 
 ## Supported hardware
 
