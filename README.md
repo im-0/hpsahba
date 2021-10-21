@@ -85,7 +85,7 @@ in a compiled kernel.
 ### Patching your kernel 
 Given that it is rare to need to manually patch the linux kernel these days, you may be forgiven for forgetting how to do it. Never fear, as it is extremely simple. This quick guide assumes you are using Gentoo or a similar source based distro.
 
-- Navigate to your linux kernel sourcefiles parent directory (/usr/src/linux)
+- Navigate to your linux kernel sourcefiles parent directory (for gentoo this is /usr/src/linux)
 - Backup your old kernel sourcefiles
 - Navigate to your target kernel (e.g., `cd /usr/src/linux/linux-5.8...`)
 - Configure your kernel .config file (e.g., with make menuconfig)
