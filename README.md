@@ -85,9 +85,10 @@ in a compiled kernel.
 ### Patching your kernel 
 Given that it is rare to need to manually patch the linux kernel these days, you may be forgiven for forgetting how to do it. Never fear, as it is extremely simple. This quick guide assumes you are using Gentoo or a similar source based distro.
 
-- Navigate to your linux kernel sourcefiles (/usr/src/linux)
+- Navigate to your linux kernel sourcefiles parent directory (/usr/src/linux)
 - Backup your old kernel sourcefiles
-- Configure your kernel .config file (e.g., with make menuconfig) 
+- Navigate to your target kernel (e.g., `cd /usr/src/linux/linux-5.8...`)
+- Configure your kernel .config file (e.g., with make menuconfig)
 - For each patch, manually apply the patch with the following command:
 - `patch -p1 < /path/to/hpsahba/kernel/patchset-that-matches-your-kernel-version/000 ...`
 - Ensure all hunks were written correctly (no errors returned). Make && make install && make modules install. Then, update your initramfs and bootloader.** E.g., on gentoo:**
