@@ -25,5 +25,6 @@ When running in a chroot you have to manually set the kernel version
 
 After that is done, unload the old hpsa driver and insert the new one
 
-    sudo modprobe -r hpsa
-    sudo modprobe hpsa hpsa_use_nvram_hba_flag=1
+    sudo modprobe -r hpsa #remove the driver
+    sudo modprobe hpsa #install the modified driver
+    (use `sudo modprobe hpsa hpsa_use_nvram_hba_flag=0` if for some reason you do not want this feature) 
