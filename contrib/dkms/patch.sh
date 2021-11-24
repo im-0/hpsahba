@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION=${1:-5.8}
+VERSION=${1:-$(uname -r | grep -o "^[0-9]*[.][0-9]*")}
 
 echo "Patching for kernel ${VERSION}"
 

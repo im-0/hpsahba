@@ -42,7 +42,7 @@ index ad3b451f431f..e98d5db41803 100644
  MODULE_PARM_DESC(hpsa_simple_mode,
  	"Use 'simple mode' rather than 'performant mode'");
  
-+static bool hpsa_use_nvram_hba_flag;
++static bool hpsa_use_nvram_hba_flag = 1;
 +module_param(hpsa_use_nvram_hba_flag, bool, 0444);
 +MODULE_PARM_DESC(hpsa_use_nvram_hba_flag,
 +	"Use flag from NVRAM to enable HBA mode");
