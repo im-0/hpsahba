@@ -4,6 +4,10 @@ Downloads and automatically patches hpsa driver from stable linux kernel tree.
 
 # Usage
 
+Run `install.sh`
+
+# manual installation
+
 Run `./patch.sh` to download and patch hpsa driver. This script also takes an
 optional argument VERSION that sets what kernel version to patch.
 
@@ -27,3 +31,5 @@ After that is done, unload the old hpsa driver and insert the new one
 
     sudo modprobe -r hpsa
     sudo modprobe hpsa hpsa_use_nvram_hba_flag=1
+
+

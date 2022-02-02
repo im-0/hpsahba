@@ -14,6 +14,8 @@ if [[ $(pwd) != *"/contrib/dkms" ]]; then
 	exit
 fi
 
+./patch.sh
+
 apt update
 
 #check if proxmox kernel is installed
