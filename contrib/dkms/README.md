@@ -32,6 +32,6 @@ Check if it worked
 
     lsblk
 
-Update initram
+Update initram, (lists some errors on TrueNAS Scale but seems to work)
 
     update-initramfs -k all -u
