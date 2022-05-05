@@ -29,7 +29,9 @@ After that is done, unload the old hpsa driver and insert the new one
     sudo modprobe hpsa
     
 Check if it worked
+
     lsblk
 
 Update initram
+
     update-initramfs -k all -u
