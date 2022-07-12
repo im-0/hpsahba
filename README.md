@@ -82,6 +82,22 @@ You can use DKMS package in
 <https://github.com/im-0/hpsahba/tree/master/contrib/dkms> to patch hpsa driver
 in a compiled kernel.
 
+### Patching your kernel 
+Given that it is rare to need to manually patch the linux kernel these days, you may be forgiven for forgetting how to do it. Never fear, as it is extremely simple. This quick guide assumes you are using Gentoo or a similar source based distro.
+
+- Navigate to your linux kernel sourcefiles parent directory (for gentoo this is /usr/src/)
+- Backup your target kernel sourcefiles
+- Navigate to your target kernel (e.g., `cd /usr/src/linux-5.8...`)
+- Configure your kernel .config file (e.g., with make menuconfig) - only needed if you don't already have the .config configured. 
+- For each hpsahba patch, manually apply the patch with the following command:
+- `patch -p1 < /path/to/hpsahba/kernel/patchset-that-matches-your-kernel-version/000 ...`
+- Ensure all hunks were written correctly (no errors returned). 
+- 'Make && make install && make modules && make modules install'.
+- Then, update your initramfs and bootloader. **E.g., on gentoo:**
+- mount /dev/... /boot (ensure external boot partition is loaded correctly)
+- genkernel --install --firmware --iscsi --luks ... (add additional options here) initramfs
+- grub-mkconfig -o /boot/grub/grub.cfg
+- Don't forget to add 'hpsa' in /etc/modules-load.d/hpsaLoad.conf and 'options hpsa hpsa_use_nvram_hba_flag=1' in /etc/modules.d/hpsaOpt.conf !
 ## Supported hardware
 
 Tested on following hardware so far:
