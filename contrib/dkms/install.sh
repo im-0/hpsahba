@@ -28,7 +28,8 @@ else
 fi
 
 echo "removing old module"
-#"force" remove as dkms remove won't work
+dkms remove hpsa-dkms/1.0
+#"force" remove as dkms remove sometimes won't work
 rm -r /var/lib/dkms/hpsa-dkms
 
 dkms add ./
