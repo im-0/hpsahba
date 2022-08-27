@@ -49,7 +49,7 @@ dkms install --force hpsa-dkms/10.0
 
 if (dkms status | grep -q "hpsa-dkms, 10.0")
 	then
-		echo -n "The installation should now be completed successfully.\n You probably need to reboot your machine to apply the changes."
+		echo -e "The installation should now be completed successfully.\n You probably need to reboot your machine to apply the changes."
 		while true; do
 			read -p "Do you want to restart now?  (y/n) " yn
 			
@@ -63,7 +63,7 @@ if (dkms status | grep -q "hpsa-dkms, 10.0")
 
 			done
 	else
-		echo -n "It seems that something went wrong. Please restart the installation and watch the output for error messages."
+		echo -e "It seems that something went wrong. Please restart the installation and watch the output for error messages."
 		echo "If the problem persists, feel free to open an Issue on https://github.com/mashuptwice/hpsahba"
 		exit 1;
 fi
