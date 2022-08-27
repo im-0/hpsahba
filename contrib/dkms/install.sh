@@ -40,7 +40,6 @@ if (dkms status | grep "hpsa-dkms")
 		#"force" remove as dkms remove sometimes won't work
 		rm -r /var/lib/dkms/hpsa-dkms
 else
-	then 
 		echo "module is not loaded, continuing"
 fi
 
