@@ -46,6 +46,7 @@ fi
 echo "installing new kernel module"
 dkms add ./
 dkms install --force hpsa-dkms/10.0
+update-initramfs -u
 
 if (dkms status | grep -q "hpsa-dkms, 10.0")
 	then
