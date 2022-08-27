@@ -45,7 +45,7 @@ fi
 
 echo "installing new kernel module"
 dkms add ./
-dkms install --force hpsa-dkms/2.0
+dkms install --force hpsa-dkms/10.0
 
 echo "reloading hpsa with hpsa_use_nvram_hba_flag=1"
 modprobe -r hpsa
