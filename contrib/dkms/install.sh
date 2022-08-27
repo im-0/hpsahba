@@ -26,7 +26,7 @@ if [[ $(uname -r) == *"pve" ]]; then
 	apt install -y pve-headers
 else
 	echo "installing default linux-headers"
-	apt install -y linux-headers-$(uname -r)
+	apt install -y "linux-headers-$(uname -r)"
 fi
 
 echo "check if hpsa dkms module is loaded"
