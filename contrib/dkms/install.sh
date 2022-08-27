@@ -30,7 +30,7 @@ else
 fi
 
 echo "check if hpsa dkms module is loaded"
-if (dkms status | grep "hpsa-dkms")
+if (dkms status | grep -q "hpsa-dkms")
 	then
 		echo "hpsa-dkms is loaded, getting module version"
 		dkmsVersion=$(dkms status | grep "hpsa-dkms" | cut -d " " -f 2 | tr -d ",")
@@ -47,9 +47,23 @@ echo "installing new kernel module"
 dkms add ./
 dkms install --force hpsa-dkms/10.0
 
-echo "reloading hpsa with hpsa_use_nvram_hba_flag=1"
-modprobe -r hpsa
-modprobe hpsa hpsa_use_nvram_hba_flag=1
+if (dkms status | grep -q "hpsa-dkms, 10.0")
+	then
+		echo -n "The installation should now be completed successfully.\n You probably need to reboot your machine to apply the changes."
+		while true; do
+			read -p "Do you want to restart now?  (y/n) " yn
+			
+			case $yn in 
+				[yY] ) shutdown -r now;
+					break;;
+				[nN] ) echo exiting...;
+					exit;;
+				* ) echo invalid response;;
+			esac
 
-echo "done."
-echo "You may want to reboot or rescan the SCSI bus"
+			done
+	else
+		echo -n "It seems that something went wrong. Please restart the installation and watch the output for error messages."
+		echo "If the problem persists, feel free to open an Issue on https://github.com/mashuptwice/hpsahba"
+		exit 1;
+fi
