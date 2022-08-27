@@ -1,7 +1,15 @@
 # NAME
 
 **hpsahba** - tool to enable/disable HBA mode on some HP Smart Array
-controllers. This fork of [im-0/hpsahba](https://github.com/im-0/hpsahba) removes the requirement to set `hpsa_use_nvram_hba_flag=1`.
+controllers. This fork comes with various improvements and bugfixes, compared to the upstream repo:
+
+ - removes the requirement to set `hpsa_use_nvram_hba_flag=1`
+ - includes install script for the dkms module
+ - sets kernel version dynamically with `uname -r`
+ - increments dkms version to prevent collision with upstream hpsa driver
+
+
+ 
 
 # SYNOPSIS
 
