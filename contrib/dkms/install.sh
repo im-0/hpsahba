@@ -21,7 +21,7 @@ apt update
 #check if proxmox kernel is installed
 if [[ $(uname -r) == *"pve" ]]; then
 	echo "installing proxmox kernel headers"
-	apt install -y pve-headers-$(uname -r)
+	apt install -y pve-headers
 else
 	echo "installing default linux-headers"
 	apt install -y linux-headers-$(uname -r)
