@@ -21,19 +21,32 @@ apt update
 #check if proxmox kernel is installed
 if [[ $(uname -r) == *"pve" ]]; then
 	echo "installing proxmox kernel headers"
+	#do not set a version here! 
+	#If you do on a kernel update the headers will NOT be updated automatically!
 	apt install -y pve-headers
 else
 	echo "installing default linux-headers"
 	apt install -y linux-headers-$(uname -r)
 fi
 
-echo "removing old module"
-dkms remove hpsa-dkms/1.0
-#"force" remove as dkms remove sometimes won't work
-rm -r /var/lib/dkms/hpsa-dkms
+echo "check if hpsa dkms module is loaded"
+if (dkms status | grep "hpsa-dkms")
+	then
+		echo "hpsa-dkms is loaded, getting module version"
+		dkmsVersion=$(dkms status | grep "hpsa-dkms" | cut -d " " -f 2 | tr -d ",")
+		echo "hpsa-dkms/$dkmsVersion is installed."
+		echo "Removing module."
+		dkms remove "hpsa-dkms/$dkmsVersion"
+		#"force" remove as dkms remove sometimes won't work
+		rm -r /var/lib/dkms/hpsa-dkms
+else
+	then 
+		echo "module is not loaded, continuing"
+fi
 
+echo "installing new kernel module"
 dkms add ./
-dkms install --force hpsa-dkms/1.0
+dkms install --force hpsa-dkms/2.0
 
 echo "reloading hpsa with hpsa_use_nvram_hba_flag=1"
 modprobe -r hpsa
