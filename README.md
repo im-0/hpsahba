@@ -8,7 +8,7 @@ controllers. This fork comes with various improvements and bugfixes, compared to
  - sets kernel version dynamically with `uname -r`
  - increments dkms version to prevent collision with upstream hpsa driver
 
-
+It does not break existing compatibility and can easily be extended by support for other distros and kernels. 
  
 
 # SYNOPSIS
