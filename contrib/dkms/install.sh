@@ -48,7 +48,7 @@ dkms add ./
 dkms install --force hpsa-dkms/10.0
 update-initramfs -u
 
-if (dkms status | grep -q "hpsa-dkms, 10.0")
+if (dkms status | grep -q "hpsa-dkms.*10.0")
 	then
 		echo -e "The installation should now be completed successfully.\n You probably need to reboot your machine to apply the changes."
 		while true; do
