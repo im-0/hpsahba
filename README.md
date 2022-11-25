@@ -1,7 +1,15 @@
 # NAME
 
 **hpsahba** - tool to enable/disable HBA mode on some HP Smart Array
-controllers.
+controllers. This fork comes with various improvements and bugfixes, compared to the upstream repo:
+
+ - removes the requirement to set `hpsa_use_nvram_hba_flag=1`
+ - includes install script for the dkms module
+ - sets kernel version dynamically with `uname -r`
+ - increments dkms version to prevent collision with upstream hpsa driver
+
+It does not break existing compatibility and can easily be extended by support for other distros and kernels. 
+ 
 
 # SYNOPSIS
 
@@ -64,9 +72,9 @@ However, to get system actually see and use disks in HBA mode, few kernel
 patches required:
 <https://github.com/im-0/hpsahba/tree/master/kernel>.
 
-This functionality is disabled by default. To enable, load module hpsa with
-parameter hpsa_use_nvram_hba_flag set to "1". Or set it in the kernel command
-line: "hpsa.hpsa_use_nvram_hba_flag=1".
+This functionality is enabled by default, once the patched drivers have been installed. To disable, load module hpsa with
+parameter hpsa_use_nvram_hba_flag set to "0". Or set it in the kernel command
+line: "hpsa.hpsa_use_nvram_hba_flag=0".
 
 Patchset changelog:
 
