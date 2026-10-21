@@ -45,28 +45,44 @@ arrays in this mode are expected to fail.
 * **hpsahba -i DEVICE_PATH**
 
   Show some information about device. This Includes HBA mode support bit
-  (supported/not supported) and current state of HBA mode (enabled/disabled).
+  (supported/not supported), current state of HBA mode (enabled/disabled) and
+  whether the controller unmasks physical drives (HBA_UNMASK_DRIVES).
   It is recommended to run this before trying to enable or disable HBA mode.
 
 * **hpsahba -E DEVICE_PATH**
 
-  Enable HBA mode.
+  Enable HBA mode: set NVRAM flag bits 3 (HBA mode) and 2 (unmask physical
+  drives), as the controller's own "set hba_mode on" command does.
 
 * **hpsahba -d DEVICE_PATH**
 
-  Disable HBA mode.
+  Disable HBA mode: clear both bits.
 
 ## Kernel driver support
 
 **hpsahba** itself is able to work on any modern Linux system.
 
-However, to get system actually see and use disks in HBA mode, few kernel
-patches required:
-<https://github.com/im-0/hpsahba/tree/master/kernel>.
+**hpsahba -E** sets NVRAM flag bit 2 together with bit 3. With it the
+controller firmware stops masking physical drives in its LUN reports, and the
+**stock, unpatched hpsa driver** exposes them as ordinary SCSI disks. No kernel
+patches, DKMS package or module parameter are needed for that. Tested on a P410
+(board ID 0x3243103c, firmware 6.64) with the unmodified hpsa 3.4.20-200 of a
+Proxmox 7.0 kernel: all four SATA drives appear as "PHYS DRV" direct-access
+devices across reboots and carry Btrfs RAID1 filesystems.
 
-This functionality is disabled by default. To enable, load module hpsa with
-parameter hpsa_use_nvram_hba_flag set to "1". Or set it in the kernel command
-line: "hpsa.hpsa_use_nvram_hba_flag=1".
+Bit 2 comes from the firmware: P410 firmware 6.64 has the diagnostic command
+"set hba_mode [off | on]", where "on" (printed as "ON (unconfigured drives also
+unmasked)") sets bits 2 and 3 and "off" clears both. Earlier hpsahba builds
+set bit 3 only, which is why the drives stayed masked and the kernel patches
+below were needed. A controller switched with an older build has bit 3 only;
+running **hpsahba -E** again sets bit 2 as well. That path is untested, and a
+reboot may be needed before the drives appear.
+
+Other controllers and firmware versions are untested with bit 2. If a
+controller keeps masking its drives, the previous approach still works: the
+kernel patches in <https://github.com/im-0/hpsahba/tree/master/kernel>, loaded
+with the hpsa module parameter hpsa_use_nvram_hba_flag set to "1" (or
+"hpsa.hpsa_use_nvram_hba_flag=1" on the kernel command line).
 
 Patchset changelog:
 
@@ -91,7 +107,8 @@ firmware: 6.64)
 * HP Smart Array P812 (PCI ID: 103c:3249, board ID: 0x3249103c,
 firmware: 6.64)
 * Hewlett-Packard Company Smart Array G6 controllers / P410 (PCI ID:
-103c:323a, board ID: 0x3243103c, firmware: 6.64)
+103c:323a, board ID: 0x3243103c, firmware: 6.64; also without kernel patches,
+see above)
 * Hewlett-Packard Company Smart Array G6 controllers / P212 (PCI ID:
 103c:323a, board ID: 0x3241103c, firmware: 6.64)
 

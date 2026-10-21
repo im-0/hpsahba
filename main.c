@@ -300,13 +300,20 @@ static int is_hba_mode_enabled(
 	return (f & NVRAM_FLAG_HBA_MODE_ENABLED) ? 1 : 0;
 }
 
+static int is_hba_unmask_enabled(
+	const struct bmic_controller_parameters *controller_params)
+{
+	uint8_t f = controller_params->nvram_flags;
+	return (f & NVRAM_FLAG_HBA_UNMASK_DRIVES) ? 1 : 0;
+}
+
 static void fill_hba_mode(
 	struct bmic_controller_parameters *controller_params, int enabled)
 {
 	if (enabled)
-		controller_params->nvram_flags |= NVRAM_FLAG_HBA_MODE_ENABLED;
+		controller_params->nvram_flags |= NVRAM_FLAGS_HBA_MODE;
 	else
-		controller_params->nvram_flags &= ~NVRAM_FLAG_HBA_MODE_ENABLED;
+		controller_params->nvram_flags &= ~NVRAM_FLAGS_HBA_MODE;
 }
 
 static const char *trim(char *str)
@@ -342,6 +349,7 @@ static void print_info(const char *path, int fd)
 	struct bmic_controller_parameters controller_params = {0};
 	int hba_mode_supported;
 	int hba_mode_enabled = 0;
+	int hba_unmask_enabled = 0;
 
 	identify_controller(path, fd, &controller_id);
 	sense_controller_parameters(path, fd, &controller_params);
@@ -368,12 +376,16 @@ static void print_info(const char *path, int fd)
 		controller_params.nvram_flags);
 
 	hba_mode_supported = is_hba_mode_supported(&controller_id);
-	if (hba_mode_supported)
+	if (hba_mode_supported) {
 		hba_mode_enabled = is_hba_mode_enabled(&controller_params);
+		hba_unmask_enabled = is_hba_unmask_enabled(&controller_params);
+	}
 	printf("HBA_MODE_SUPPORTED=%d\n",
 		hba_mode_supported);
 	printf("HBA_MODE_ENABLED=%d\n",
 		hba_mode_enabled);
+	printf("HBA_UNMASK_DRIVES=%d\n",
+		hba_unmask_enabled);
 }
 
 static void verify_hba_mode(const char *path, int fd, int should_be_enabled)
@@ -382,13 +394,15 @@ static void verify_hba_mode(const char *path, int fd, int should_be_enabled)
 
 	sense_controller_parameters(path, fd, &controller_params);
 	if (should_be_enabled) {
-		if (!is_hba_mode_enabled(&controller_params))
+		if (!is_hba_mode_enabled(&controller_params) ||
+		    !is_hba_unmask_enabled(&controller_params))
 			die_dev(path,
 				"HBA mode enable failed, "
 				"nvram_flags == 0x%02x",
 				controller_params.nvram_flags);
 	} else {
-		if (is_hba_mode_enabled(&controller_params))
+		if (is_hba_mode_enabled(&controller_params) ||
+		    is_hba_unmask_enabled(&controller_params))
 			die_dev(path,
 				"HBA mode disable failed, "
 				"nvram_flags == 0x%02x",

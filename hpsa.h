@@ -199,6 +199,15 @@ struct bmic_controller_parameters {
 };
 
 #define NVRAM_FLAG_HBA_MODE_ENABLED (1 << 3)
+/*
+ * With this bit set the firmware stops masking unconfigured physical drives
+ * in its LUN reports, so the stock hpsa driver exposes them. The controller's
+ * own "set hba_mode on" diagnostic command sets both bits, "off" clears both
+ * (P410 firmware 6.64).
+ */
+#define NVRAM_FLAG_HBA_UNMASK_DRIVES (1 << 2)
+#define NVRAM_FLAGS_HBA_MODE \
+	(NVRAM_FLAG_HBA_MODE_ENABLED | NVRAM_FLAG_HBA_UNMASK_DRIVES)
 
 #pragma pack()
 #endif /* HPSAHBA_HPSA_H */
